@@ -150,6 +150,14 @@ const googleLogin = async (req, res) => {
     try {
         const { token } = req.body;
         
+        console.log('Received Google token request');
+        console.log('Token received:', token ? 'Token present' : 'No token');
+        console.log('Google Client ID:', process.env.GOOGLE_CLIENT_ID);
+        
+        if (!token) {
+            return res.status(400).json({ error: 'Google token is required' });
+        }
+        
         // Verify the Google token
         const ticket = await googleClient.verifyIdToken({
             idToken: token,
@@ -157,19 +165,41 @@ const googleLogin = async (req, res) => {
         });
 
         const payload = ticket.getPayload();
+        console.log('Google payload received:', payload?.email);
         const { email, name, picture } = payload;
+
+        if (!email) {
+            return res.status(400).json({ error: 'Email not provided by Google' });
+        }
 
         // Find or create user
         let user = await User.findOne({ email });
         if (!user) {
+            console.log('Creating new user for:', email);
             user = new User({
                 name,
                 email,
                 picture,
                 googleId: payload.sub,
-                password: Math.random().toString(36).slice(-8) // Random password for Google users
+                password: Math.random().toString(36).slice(-8), // Random password for Google users
+                settings: {
+                    displayName: name,
+                    currency: 'USD',
+                    theme: 'system'
+                }
             });
             await user.save();
+        } else {
+            console.log('Existing user found:', email);
+            // Ensure existing users have default settings if not present
+            if (!user.settings || Object.keys(user.settings).length === 0) {
+                user.settings = {
+                    displayName: user.settings?.displayName || name,
+                    currency: user.settings?.currency || 'USD',
+                    theme: user.settings?.theme || 'system'
+                };
+                await user.save();
+            }
         }
 
         // Generate token
@@ -186,8 +216,18 @@ const googleLogin = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Google login error:', error);
-        res.status(401).json({ error: 'Invalid Google token' });
+        console.error('Google login error details:', error.message);
+        console.error('Full error:', error);
+        
+        if (error.message.includes('Wrong number of segments')) {
+            return res.status(401).json({ error: 'Invalid token format' });
+        } else if (error.message.includes('audience')) {
+            return res.status(401).json({ error: 'Token audience mismatch' });
+        } else if (error.message.includes('expired')) {
+            return res.status(401).json({ error: 'Token expired' });
+        }
+        
+        res.status(401).json({ error: 'Authentication failed', details: error.message });
     }
 };
 

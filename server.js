@@ -10,6 +10,12 @@ const transactionRoutes = require('./src/routes/transaction.routes');
 // Load environment variables
 dotenv.config();
 
+// Debug: Check if Google Client ID is loaded
+console.log('Google Client ID loaded:', process.env.GOOGLE_CLIENT_ID ? 'Yes' : 'No');
+if (process.env.GOOGLE_CLIENT_ID) {
+    console.log('Google Client ID starts with:', process.env.GOOGLE_CLIENT_ID.substring(0, 20) + '...');
+}
+
 // Connect to MongoDB
 connectDB();
 
