@@ -27,6 +27,12 @@ const passwordUpdateValidation = [
         .withMessage('New password must be at least 6 characters long')
 ];
 
+const settingsValidation = [
+    body('displayName').optional().trim().isLength({ min: 1 }).withMessage('Display name cannot be empty'),
+    body('currency').optional().isIn(['INR', 'USD', 'EUR', 'GBP', 'JPY', 'AUD', 'CAD', 'CNY']).withMessage('Invalid currency'),
+    body('theme').optional().isIn(['light', 'dark', 'system']).withMessage('Invalid theme')
+];
+
 // Routes
 router.post('/register', validate(registerValidation), authController.register);
 router.post('/login', validate(loginValidation), authController.login);
@@ -34,5 +40,7 @@ router.post('/google', authController.googleLogin); // Google OAuth login
 router.get('/profile', auth, authController.getProfile);
 router.put('/profile', auth, authController.updateProfile);
 router.put('/password', auth, validate(passwordUpdateValidation), authController.updatePassword);
+router.get('/settings', auth, authController.getSettings);
+router.put('/settings', auth, validate(settingsValidation), authController.updateSettings);
 
 module.exports = router;

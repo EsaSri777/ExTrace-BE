@@ -96,7 +96,18 @@ const updateProfile = async (req, res) => {
         // Remove sensitive fields
         delete updates.password;
         delete updates.role;
+        delete updates.email; // Prevent email changes through profile update
 
+        // Handle settings updates
+        if (updates.settings) {
+            user.settings = {
+                ...user.settings,
+                ...updates.settings
+            };
+            delete updates.settings; // Remove from main updates
+        }
+
+        // Update other fields
         Object.assign(user, updates);
         await user.save();
 
@@ -110,6 +121,7 @@ const updateProfile = async (req, res) => {
             }
         });
     } catch (error) {
+        console.error('Profile update error:', error);
         res.status(500).json({ error: 'Error updating profile' });
     }
 };
@@ -179,11 +191,65 @@ const googleLogin = async (req, res) => {
     }
 };
 
+// Get user settings
+const getSettings = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).select('settings name');
+        
+        const settings = user.settings || {};
+        const response = {
+            displayName: settings.displayName || user.name || '',
+            currency: settings.currency || 'USD',
+            theme: settings.theme || 'system'
+        };
+        
+        res.json(response);
+    } catch (error) {
+        console.error('Get settings error:', error);
+        res.status(500).json({ error: 'Error fetching settings' });
+    }
+};
+
+// Update user settings
+const updateSettings = async (req, res) => {
+    try {
+        const { displayName, currency, theme } = req.body;
+        const user = req.user;
+
+        // Validate theme
+        if (theme && !['light', 'dark', 'system'].includes(theme)) {
+            return res.status(400).json({ error: 'Invalid theme value' });
+        }
+
+        // Validate currency
+        const validCurrencies = ['INR', 'USD', 'EUR', 'GBP', 'JPY', 'AUD', 'CAD', 'CNY'];
+        if (currency && !validCurrencies.includes(currency)) {
+            return res.status(400).json({ error: 'Invalid currency value' });
+        }
+
+        // Update settings
+        user.settings = {
+            displayName: displayName || user.settings?.displayName || user.name,
+            currency: currency || user.settings?.currency || 'USD',
+            theme: theme || user.settings?.theme || 'system'
+        };
+
+        await user.save();
+
+        res.json(user.settings);
+    } catch (error) {
+        console.error('Update settings error:', error);
+        res.status(500).json({ error: 'Error updating settings' });
+    }
+};
+
 module.exports = {
     register,
     login,
     googleLogin,
     getProfile,
     updateProfile,
-    updatePassword
+    updatePassword,
+    getSettings,
+    updateSettings
 };

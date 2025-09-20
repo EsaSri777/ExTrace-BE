@@ -25,15 +25,22 @@ const userSchema = new mongoose.Schema({
         default: 'user'
     },
     settings: {
+        displayName: {
+            type: String,
+            trim: true,
+            default: function() {
+                return this.name; // Default to the user's name
+            }
+        },
         theme: {
             type: String,
-            enum: ['light', 'dark'],
-            default: 'light'
+            enum: ['light', 'dark', 'system'],
+            default: 'system'
         },
         currency: {
             type: String,
-            enum: ['INR', 'USD', 'EUR'],
-            default: 'INR'
+            enum: ['INR', 'USD', 'EUR', 'GBP', 'JPY', 'AUD', 'CAD', 'CNY'],
+            default: 'USD'
         }
     }
 }, {

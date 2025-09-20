@@ -6,8 +6,8 @@ const categoryController = require('../controllers/category.controller');
 
 const router = express.Router();
 
-// Validation rules
-const categoryValidation = [
+// Validation rules for creating categories
+const createCategoryValidation = [
     body('name').trim().notEmpty().withMessage('Category name is required'),
     body('type')
         .isIn(['income', 'expense'])
@@ -16,10 +16,18 @@ const categoryValidation = [
     body('color').optional().isHexColor().withMessage('Invalid color format')
 ];
 
+// Validation rules for updating categories (type is not required)
+const updateCategoryValidation = [
+    body('name').trim().notEmpty().withMessage('Category name is required'),
+    body('type').optional().isIn(['income', 'expense']).withMessage('Type must be either income or expense'),
+    body('icon').optional(),
+    body('color').optional().isHexColor().withMessage('Invalid color format')
+];
+
 // Routes
 router.post('/', 
     auth, 
-    validate(categoryValidation), 
+    validate(createCategoryValidation), 
     categoryController.createCategory
 );
 
@@ -30,7 +38,7 @@ router.get('/',
 
 router.put('/:id', 
     auth, 
-    validate(categoryValidation), 
+    validate(updateCategoryValidation), 
     categoryController.updateCategory
 );
 

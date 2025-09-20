@@ -81,7 +81,7 @@ const deleteCategory = async (req, res) => {
             return res.status(403).json({ error: 'Default categories cannot be deleted' });
         }
 
-        await category.remove();
+        await Category.findByIdAndDelete(req.params.id);
         res.json({ message: 'Category deleted successfully' });
     } catch (error) {
         res.status(500).json({ error: 'Error deleting category' });
