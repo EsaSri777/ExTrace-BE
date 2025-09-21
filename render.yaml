@@ -4,9 +4,10 @@ services:
     env: node
     plan: free
     region: oregon
-    buildCommand: npm install --production
-    startCommand: npm start
+    buildCommand: npm ci --only=production
+    startCommand: node server.js
     healthCheckPath: /
+    autoDeploy: true
     envVars:
       - key: NODE_ENV
         value: production
