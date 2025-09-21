@@ -13,7 +13,6 @@ const parseAIResponse = (text) => {
         const jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/);
         if (jsonMatch) {
             const cleanedText = jsonMatch[1].trim();
-            console.log('Cleaned JSON text:', cleanedText);
             return JSON.parse(cleanedText);
         } else {
             throw directParseError;
@@ -23,7 +22,6 @@ const parseAIResponse = (text) => {
 
 async function testAIAnalysis() {
     try {
-        console.log('🔗 Connecting to database...');
         await mongoose.connect(process.env.MONGODB_URI);
         
         const { Transaction } = require('./src/models');
@@ -38,9 +36,7 @@ async function testAIAnalysis() {
             userId,
             date: { $gte: startDate, $lte: endDate }
         }).populate('categoryId');
-        
-        console.log('📊 Found transactions:', transactions.length);
-        
+                
         // Calculate spending by category
         const categorySpending = {};
         let totalSpending = 0;
@@ -61,11 +57,7 @@ async function testAIAnalysis() {
             .sort((a, b) => b.percentage - a.percentage)
             .slice(0, 5);
         
-        console.log('💰 Total spending:', totalSpending);
-        console.log('📈 Top categories:', topCategories);
-        
         // Test AI analysis
-        console.log('\n🤖 Testing AI analysis...');
         const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         
@@ -95,25 +87,18 @@ async function testAIAnalysis() {
         
         Important: Return only the JSON object, no markdown formatting.
         `;
-        
-        console.log('📝 AI Prompt:', prompt);
-        
+            
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const text = response.text();
-        
-        console.log('🤖 Raw AI Response:', text);
-        
+                
         try {
-            const aiAnalysis = parseAIResponse(text);
-            console.log('✅ Parsed AI Analysis:', JSON.stringify(aiAnalysis, null, 2));
-            
+            const aiAnalysis = parseAIResponse(text);            
             const finalResult = {
                 ...aiAnalysis,
                 topCategories
             };
             
-            console.log('🎯 Final Result:', JSON.stringify(finalResult, null, 2));
             
         } catch (parseError) {
             console.error('❌ AI parsing failed:', parseError.message);
@@ -132,7 +117,6 @@ async function testAIAnalysis() {
                 recommendations: ['Continue tracking your expenses', 'Review large expenses']
             };
             
-            console.log('🔄 Fallback result:', JSON.stringify(fallback, null, 2));
         }
         
         mongoose.disconnect();

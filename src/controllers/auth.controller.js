@@ -150,10 +150,6 @@ const googleLogin = async (req, res) => {
     try {
         const { token } = req.body;
         
-        console.log('Received Google token request');
-        console.log('Token received:', token ? 'Token present' : 'No token');
-        console.log('Google Client ID:', process.env.GOOGLE_CLIENT_ID);
-        
         if (!token) {
             return res.status(400).json({ error: 'Google token is required' });
         }
@@ -165,7 +161,6 @@ const googleLogin = async (req, res) => {
         });
 
         const payload = ticket.getPayload();
-        console.log('Google payload received:', payload?.email);
         const { email, name, picture } = payload;
 
         if (!email) {
@@ -175,7 +170,6 @@ const googleLogin = async (req, res) => {
         // Find or create user
         let user = await User.findOne({ email });
         if (!user) {
-            console.log('Creating new user for:', email);
             user = new User({
                 name,
                 email,
@@ -190,7 +184,6 @@ const googleLogin = async (req, res) => {
             });
             await user.save();
         } else {
-            console.log('Existing user found:', email);
             // Ensure existing users have default settings if not present
             if (!user.settings || Object.keys(user.settings).length === 0) {
                 user.settings = {

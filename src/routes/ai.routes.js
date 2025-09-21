@@ -20,9 +20,7 @@ router.use(auth);
 
 // Simple fallback for spending analysis
 router.post('/analyze-spending', async (req, res) => {
-    try {
-        console.log('📊 Fallback spending analysis...');
-        
+    try {        
         if (!req.user || !req.user._id) {
             return res.status(401).json({ error: 'User not authenticated' });
         }
@@ -38,8 +36,6 @@ router.post('/analyze-spending', async (req, res) => {
             userId,
             date: { $gte: startDate, $lte: endDate }
         }).populate('categoryId');
-
-        console.log('Found', transactions.length, 'transactions');
 
         if (transactions.length === 0) {
             return res.json({
@@ -96,9 +92,7 @@ router.post('/analyze-spending', async (req, res) => {
 
 // Simple fallback for budget prediction
 router.post('/predict-budget', async (req, res) => {
-    try {
-        console.log('📈 Fallback budget prediction...');
-        
+    try {        
         if (!req.user || !req.user._id) {
             return res.status(401).json({ error: 'User not authenticated' });
         }
@@ -163,9 +157,7 @@ router.post('/predict-budget', async (req, res) => {
 
 // Simple fallback for health score
 router.post('/health-score', async (req, res) => {
-    try {
-        console.log('💚 Fallback health score...');
-        
+    try {        
         if (!req.user || !req.user._id) {
             return res.status(401).json({ error: 'User not authenticated' });
         }
@@ -230,9 +222,7 @@ router.post('/health-score', async (req, res) => {
 
 // Simple fallback for recommendations
 router.post('/recommendations', async (req, res) => {
-    try {
-        console.log('💡 Fallback recommendations...');
-        
+    try {        
         if (!req.user || !req.user._id) {
             return res.status(401).json({ error: 'User not authenticated' });
         }
@@ -309,9 +299,7 @@ router.post('/recommendations', async (req, res) => {
 
 // Simple fallback for chat
 router.post('/chat', async (req, res) => {
-    try {
-        console.log('💬 Fallback chat...');
-        
+    try {        
         const { message } = req.body;
         const lowerMessage = message.toLowerCase();
         

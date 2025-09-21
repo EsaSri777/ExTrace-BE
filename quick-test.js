@@ -36,25 +36,13 @@ function testEndpoint(path, data = {}) {
 
 async function quickTest() {
     try {
-        console.log('🧪 Quick test of AI endpoints...\n');
         
         // Test spending analysis
         const spending = await testEndpoint('/test/analyze-spending', { period: 'month' });
-        console.log('📊 Spending Analysis:', spending.status);
-        if (spending.status === 200) {
-            console.log('   ✅ SUCCESS - Got insights:', spending.data.insights?.length || 0);
-        } else {
-            console.log('   ❌ FAILED:', spending.data);
-        }
         
         // Test budget prediction  
         const budget = await testEndpoint('/test/predict-budget', {});
-        console.log('💰 Budget Prediction:', budget.status);
-        if (budget.status === 200) {
-            console.log('   ✅ SUCCESS - Prediction:', budget.data.nextMonthPrediction);
-        } else {
-            console.log('   ❌ FAILED:', budget.data);
-        }
+       
         
         // Test health score
         const health = await testEndpoint('/test/health-score', {});

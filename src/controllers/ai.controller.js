@@ -28,7 +28,6 @@ const parseAIResponse = (text) => {
         const jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/);
         if (jsonMatch) {
             const cleanedText = jsonMatch[1].trim();
-            console.log('Cleaned JSON text:', cleanedText);
             return JSON.parse(cleanedText);
         } else {
             throw directParseError;
@@ -73,11 +72,8 @@ Important: Do not use markdown code blocks or any other formatting. Return only 
         const response = await result.response;
         const text = response.text();
         
-        console.log('Raw AI Response:', text);
-        
         try {
             const aiResponse = parseAIResponse(text);
-            console.log('Parsed AI Response:', aiResponse);
             res.json(aiResponse);
         } catch (parseError) {
             console.error('JSON parsing failed:', parseError);
@@ -101,10 +97,6 @@ Important: Do not use markdown code blocks or any other formatting. Return only 
 // Analyze spending patterns
 const analyzeSpendingPatterns = async (req, res) => {
     try {
-        console.log('🔍 Analyzing spending patterns...');
-        console.log('Request body:', req.body);
-        console.log('User from auth:', req.user);
-        
         const { period = 'month' } = req.body;
         
         // Ensure we have a valid user ID
@@ -114,9 +106,6 @@ const analyzeSpendingPatterns = async (req, res) => {
         }
         
         const userId = mongoose.Types.ObjectId.isValid(req.user._id) ? req.user._id : new mongoose.Types.ObjectId(req.user._id);
-        
-        console.log('User ID:', userId);
-        console.log('Period:', period);
         
         // Get transaction data
         const endDate = new Date();
@@ -136,17 +125,12 @@ const analyzeSpendingPatterns = async (req, res) => {
                 startDate.setMonth(startDate.getMonth() - 1);
         }
 
-        console.log('Date range:', startDate, 'to', endDate);
-
         const transactions = await Transaction.find({
             userId,
             date: { $gte: startDate, $lte: endDate }
         }).populate('categoryId');
 
-        console.log('Found transactions:', transactions.length);
-
         if (transactions.length === 0) {
-            console.log('⚠️ No transactions found for user, returning default response');
             return res.json({
                 monthlyTrend: 'stable',
                 topCategories: [],
@@ -241,7 +225,6 @@ const analyzeSpendingPatterns = async (req, res) => {
 // Predict budget
 const predictBudget = async (req, res) => {
     try {
-        console.log('📈 Predicting budget...');
         
         const { targetMonth } = req.body;
         
@@ -252,24 +235,18 @@ const predictBudget = async (req, res) => {
         }
         
         const userId = mongoose.Types.ObjectId.isValid(req.user._id) ? req.user._id : new mongoose.Types.ObjectId(req.user._id);
-        console.log('Predicting budget for user:', userId);
 
         // Get last 3 months of data
         const endDate = new Date();
         const startDate = new Date();
         startDate.setMonth(startDate.getMonth() - 3);
 
-        console.log('Fetching budget data from:', startDate, 'to:', endDate);
-
         const transactions = await Transaction.find({
             userId,
             date: { $gte: startDate, $lte: endDate }
         }).populate('categoryId');
 
-        console.log('Found', transactions.length, 'transactions for budget prediction');
-
         if (transactions.length === 0) {
-            console.log('⚠️ No transactions found, returning default budget prediction');
             return res.json({
                 nextMonthPrediction: 0,
                 categoryBreakdown: [],
@@ -302,8 +279,6 @@ const predictBudget = async (req, res) => {
             };
         }).sort((a, b) => b.predicted - a.predicted);
 
-        console.log('Budget prediction metrics:', { monthlyAverage, categoryBreakdown });
-
         try {
             const model = getGeminiModel();
             const prompt = `
@@ -327,7 +302,6 @@ const predictBudget = async (req, res) => {
             const text = response.text();
             
             const prediction = parseAIResponse(text);
-            console.log('✅ AI budget prediction generated successfully');
             
             res.json({
                 nextMonthPrediction: prediction.nextMonthPrediction || Math.round(monthlyAverage),
@@ -350,7 +324,6 @@ const predictBudget = async (req, res) => {
                 else if (recentMonth < monthlyAverage * 0.9) trend = 'decreasing';
             }
 
-            console.log('✅ Fallback budget prediction generated');
             res.json({
                 nextMonthPrediction: Math.round(monthlyAverage * 1.05), // Slight increase assumption
                 categoryBreakdown,
@@ -371,7 +344,6 @@ const predictBudget = async (req, res) => {
 // Financial health score
 const calculateFinancialHealthScore = async (req, res) => {
     try {
-        console.log('💚 Calculating financial health score...');
         
         // Ensure we have a valid user ID
         if (!req.user || !req.user._id) {
@@ -380,8 +352,6 @@ const calculateFinancialHealthScore = async (req, res) => {
         }
         
         const userId = mongoose.Types.ObjectId.isValid(req.user._id) ? req.user._id : new mongoose.Types.ObjectId(req.user._id);
-        console.log('Health score for user:', userId);
-        
         const user = await User.findById(userId);
         if (!user) {
             console.error('❌ User not found in database');
@@ -393,17 +363,12 @@ const calculateFinancialHealthScore = async (req, res) => {
         const startDate = new Date();
         startDate.setMonth(startDate.getMonth() - 3);
 
-        console.log('Fetching transactions from:', startDate, 'to:', endDate);
-
         const transactions = await Transaction.find({
             userId,
             date: { $gte: startDate, $lte: endDate }
         });
 
-        console.log('Found', transactions.length, 'transactions for health score');
-
         if (transactions.length === 0) {
-            console.log('⚠️ No transactions found, returning default health score');
             return res.json({
                 score: 50,
                 factors: [
@@ -423,8 +388,6 @@ const calculateFinancialHealthScore = async (req, res) => {
 
         const savingsRate = income > 0 ? ((income - expenses) / income) * 100 : 0;
         const transactionCount = transactions.length;
-
-        console.log('Health score metrics:', { income, expenses, savingsRate, transactionCount });
 
         // Use AI to calculate health score with fallback
         try {
@@ -453,7 +416,6 @@ const calculateFinancialHealthScore = async (req, res) => {
             
             try {
                 const healthScore = parseAIResponse(text);
-                console.log('✅ AI health score generated successfully');
                 res.json(healthScore);
             } catch (parseError) {
                 console.error('⚠️ Health score parsing failed, using fallback:', parseError);
@@ -481,7 +443,6 @@ const calculateFinancialHealthScore = async (req, res) => {
                 ]
             };
             
-            console.log('✅ Fallback health score generated:', fallbackScore);
             res.json(fallbackScore);
         }
     } catch (error) {
@@ -621,8 +582,6 @@ const detectAnomalies = async (req, res) => {
 // Get personalized recommendations
 const getRecommendations = async (req, res) => {
     try {
-        console.log('💡 Getting AI recommendations...');
-        
         // Ensure we have a valid user ID
         if (!req.user || !req.user._id) {
             console.error('❌ No authenticated user for recommendations');
@@ -630,24 +589,18 @@ const getRecommendations = async (req, res) => {
         }
         
         const userId = mongoose.Types.ObjectId.isValid(req.user._id) ? req.user._id : new mongoose.Types.ObjectId(req.user._id);
-        console.log('Getting recommendations for user:', userId);
         
         // Get user's financial data
         const endDate = new Date();
         const startDate = new Date();
         startDate.setMonth(startDate.getMonth() - 1);
 
-        console.log('Fetching recommendation data from:', startDate, 'to:', endDate);
-
         const transactions = await Transaction.find({
             userId,
             date: { $gte: startDate, $lte: endDate }
         }).populate('categoryId');
 
-        console.log('Found', transactions.length, 'transactions for recommendations');
-
         if (transactions.length === 0) {
-            console.log('⚠️ No transactions found, returning default recommendations');
             return res.json([
                 {
                     type: 'budget_recommendation',
@@ -684,9 +637,6 @@ const getRecommendations = async (req, res) => {
                 categorySpending[categoryName] = (categorySpending[categoryName] || 0) + transaction.amount;
             }
         });
-
-        console.log('Recommendation metrics:', { totalIncome, totalExpenses, categorySpending });
-
         try {
             const model = getGeminiModel();
             const prompt = `
@@ -717,7 +667,6 @@ const getRecommendations = async (req, res) => {
             const text = response.text();
             
             const recommendations = parseAIResponse(text);
-            console.log('✅ AI recommendations generated successfully');
             res.json(recommendations);
         } catch (aiError) {
             console.error('⚠️ AI recommendations failed, using fallback:', aiError);
@@ -757,7 +706,6 @@ const getRecommendations = async (req, res) => {
                 });
             }
             
-            console.log('✅ Fallback recommendations generated');
             res.json(fallbackRecommendations);
         }
     } catch (error) {
@@ -773,10 +721,6 @@ const getRecommendations = async (req, res) => {
 // Debug function to test the AI controller without complex logic
 const debugAI = async (req, res) => {
     try {
-        console.log('🐛 Debug AI endpoint called');
-        console.log('Request user:', req.user);
-        console.log('Request body:', req.body);
-        
         if (!req.user) {
             return res.status(401).json({ error: 'No authenticated user' });
         }
