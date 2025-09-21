@@ -40,16 +40,47 @@ const transactionValidation = [
         .isIn(['income', 'expense'])
         .withMessage('Type must be either income or expense'),
     body('amount')
-        .isFloat({ min: 0 })
-        .withMessage('Amount must be a positive number'),
+        .custom((value) => {
+            const num = Number(value);
+            if (isNaN(num) || num < 0) {
+                throw new Error('Amount must be a positive number');
+            }
+            return true;
+        }),
     body('date')
-        .isISO8601()
-        .withMessage('Invalid date format'),
+        .custom((value) => {
+            const date = new Date(value);
+            if (isNaN(date.getTime())) {
+                throw new Error('Invalid date format');
+            }
+            return true;
+        }),
     body('categoryId')
-        .isMongoId()
-        .withMessage('Invalid category ID'),
+        .custom((value) => {
+            if (!value || value.trim() === '') {
+                throw new Error('Category is required');
+            }
+            if (!value.match(/^[0-9a-fA-F]{24}$/)) {
+                throw new Error('Invalid category ID format');
+            }
+            return true;
+        }),
     body('notes').optional().trim(),
-    body('tags').optional().isArray(),
+    body('tags').optional().custom((value) => {
+        // Handle both array and JSON string formats
+        if (typeof value === 'string') {
+            try {
+                JSON.parse(value);
+                return true;
+            } catch {
+                throw new Error('Tags must be a valid JSON array');
+            }
+        }
+        if (Array.isArray(value)) {
+            return true;
+        }
+        throw new Error('Tags must be an array');
+    }),
     body('recurringType')
         .optional()
         .isIn(['none', 'daily', 'weekly', 'monthly', 'yearly'])

@@ -3,8 +3,17 @@ const { Transaction, Category } = require('../models');
 // Create transaction
 const createTransaction = async (req, res) => {
     try {
-        const { type, amount, date, categoryId, notes, tags, recurringType } = req.body;
+        let { type, amount, date, categoryId, notes, tags, recurringType } = req.body;
         const userId = req.user._id;
+
+        // Parse tags if it's a JSON string (from FormData)
+        if (typeof tags === 'string') {
+            try {
+                tags = JSON.parse(tags);
+            } catch (e) {
+                tags = [];
+            }
+        }
 
         // Verify category belongs to user
         const category = await Category.findOne({ _id: categoryId, userId });
@@ -14,13 +23,13 @@ const createTransaction = async (req, res) => {
 
         const transaction = new Transaction({
             type,
-            amount,
-            date,
+            amount: Number(amount),
+            date: new Date(date),
             categoryId,
             userId,
             notes,
-            tags,
-            recurringType
+            tags: tags || [],
+            recurringType: recurringType || 'none'
         });
 
         if (req.file) {
@@ -32,8 +41,10 @@ const createTransaction = async (req, res) => {
         }
 
         await transaction.save();
-        res.status(201).json(transaction);
+        const newTransaction = await Transaction.findById(transaction._id).populate('categoryId', 'name icon color');
+        res.status(201).json(newTransaction);
     } catch (error) {
+        console.error('Error creating transaction:', error);
         res.status(500).json({ error: 'Error creating transaction' });
     }
 };
@@ -128,7 +139,16 @@ const getTransactionById = async (req, res) => {
 // Update transaction
 const updateTransaction = async (req, res) => {
     try {
-        const { type, amount, date, categoryId, notes, tags, recurringType } = req.body;
+        let { type, amount, date, categoryId, notes, tags, recurringType } = req.body;
+        
+        // Parse tags if it's a JSON string (from FormData)
+        if (typeof tags === 'string') {
+            try {
+                tags = JSON.parse(tags);
+            } catch (e) {
+                tags = [];
+            }
+        }
         
         const transaction = await Transaction.findOne({
             _id: req.params.id,
@@ -147,16 +167,14 @@ const updateTransaction = async (req, res) => {
             }
         }
 
-        // Update fields
-        Object.assign(transaction, {
-            type: type || transaction.type,
-            amount: amount || transaction.amount,
-            date: date || transaction.date,
-            categoryId: categoryId || transaction.categoryId,
-            notes: notes || transaction.notes,
-            tags: tags || transaction.tags,
-            recurringType: recurringType || transaction.recurringType
-        });
+        // Update fields (only if provided)
+        if (type) transaction.type = type;
+        if (amount) transaction.amount = Number(amount);
+        if (date) transaction.date = new Date(date);
+        if (categoryId) transaction.categoryId = categoryId;
+        if (notes !== undefined) transaction.notes = notes;
+        if (tags !== undefined) transaction.tags = tags;
+        if (recurringType) transaction.recurringType = recurringType;
 
         if (req.file) {
             transaction.attachment = {
@@ -167,8 +185,10 @@ const updateTransaction = async (req, res) => {
         }
 
         await transaction.save();
-        res.json(transaction);
+        const updatedTransaction = await Transaction.findById(transaction._id).populate('categoryId', 'name icon color');
+        res.json(updatedTransaction);
     } catch (error) {
+        console.error('Error updating transaction:', error);
         res.status(500).json({ error: 'Error updating transaction' });
     }
 };
