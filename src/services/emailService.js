@@ -267,6 +267,10 @@ class EmailService {
 
     // Welcome email for new users
     async sendWelcomeEmail(user) {
+        console.log('FRONTEND_URL:', process.env.FRONTEND_URL);
+        const dashboardUrl = `${process.env.FRONTEND_URL}/dashboard`;
+        console.log('dashboardUrl:', dashboardUrl);
+        
         return await this.sendEmail(
             user.email,
             'Welcome to EXTrace - Your Financial Journey Begins!',
@@ -274,7 +278,7 @@ class EmailService {
             {
                 name: user.name,
                 email: user.email,
-                dashboardUrl: `${process.env.FRONTEND_URL}/dashboard`,
+                dashboardUrl: dashboardUrl,
                 supportUrl: `${process.env.FRONTEND_URL}/support`
             }
         );
