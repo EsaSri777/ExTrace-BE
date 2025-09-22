@@ -1,15 +1,16 @@
+// Load environment variables FIRST
+const dotenv = require('dotenv');
+dotenv.config();
+
 const express = require('express');
 const cors = require('cors');
-const dotenv = require('dotenv');
 const connectDB = require('./src/config/db');
 
 const authRoutes = require('./src/routes/auth.routes');
 const categoryRoutes = require('./src/routes/category.routes');
 const transactionRoutes = require('./src/routes/transaction.routes');
 const aiRoutes = require('./src/routes/ai.routes');
-
-// Load environment variables
-dotenv.config();
+const emailRoutes = require('./src/routes/email.routes');
 
 // Connect to MongoDB
 connectDB();
@@ -25,6 +26,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/email', emailRoutes);
+app.use('/api/test', require('./src/routes/test.routes'));
 
 app.get('/', (req, res) => {
     res.send('API is running...');
@@ -40,4 +43,11 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
     console.log(`🚀 Server is running on port ${PORT}`);
+    
+    // Start email scheduler service
+    if (process.env.NODE_ENV !== 'test') {
+        const SchedulerService = require('./src/services/schedulerService');
+        SchedulerService.start();
+        console.log('📧 Email scheduler service started');
+    }
 });

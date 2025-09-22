@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to EXTrace</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .header p {
+            margin: 10px 0 0;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .welcome-message {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .welcome-message h2 {
+            color: #667eea;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        .features {
+            margin: 30px 0;
+        }
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+            font-size: 18px;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+            }
+            .header, .content, .footer {
+                padding: 20px;
+            }
+            .feature {
+                flex-direction: column;
+                text-align: center;
+            }
+            .feature-icon {
+                margin: 0 0 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏦 EXTrace</h1>
+            <p>Your Personal Finance Tracker</p>
+        </div>
+        
+        <div class="content">
+            <div class="welcome-message">
+                <h2>Welcome, {{name}}! 🎉</h2>
+                <p>Thank you for joining EXTrace! We're excited to help you take control of your finances and achieve your financial goals.</p>
+            </div>
+            
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">📊</div>
+                    <div>
+                        <h3>Track Expenses</h3>
+                        <p>Easily categorize and monitor your daily expenses with our intuitive interface.</p>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">💰</div>
+                    <div>
+                        <h3>Set Budgets</h3>
+                        <p>Create budgets for different categories and get alerts when you're close to limits.</p>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">📈</div>
+                    <div>
+                        <h3>Generate Reports</h3>
+                        <p>Get detailed insights with weekly and monthly reports to understand your spending patterns.</p>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">🎯</div>
+                    <div>
+                        <h3>Achieve Goals</h3>
+                        <p>Set financial goals and track your progress with personalized recommendations.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center;">
+                <a href="{{dashboardUrl}}" class="cta-button">Get Started with Your Dashboard</a>
+            </div>
+            
+            <div style="margin-top: 30px; padding: 20px; background: #e3f2fd; border-radius: 8px;">
+                <h3 style="color: #1976d2; margin-top: 0;">💡 Quick Tip</h3>
+                <p>Start by adding your first expense transaction. This will help you get familiar with the app and see your spending patterns develop over time.</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Need help getting started? <a href="{{supportUrl}}">Visit our support center</a></p>
+            <p>This email was sent to {{email}}. You can manage your email preferences in your account settings.</p>
+            <p>&copy; 2025 EXTrace. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

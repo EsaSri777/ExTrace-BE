@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXTrace Newsletter - Financial Tips & Insights</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .newsletter-title {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+        .newsletter-date {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 30px;
+        }
+        .section {
+            margin: 30px 0;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #eee;
+        }
+        .section:last-child {
+            border-bottom: none;
+        }
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1976d2;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .section-icon {
+            margin-right: 10px;
+            font-size: 24px;
+        }
+        .tip-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #1976d2;
+        }
+        .tip-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .tip-description {
+            color: #666;
+            font-size: 14px;
+        }
+        .feature-highlight {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .feature-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .feature-description {
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+        .feature-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: white;
+            color: #4caf50;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1976d2;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .cta-section {
+            background: #1976d2;
+            color: white;
+            padding: 30px;
+            text-align: center;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+        .cta-title {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+        .cta-description {
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: white;
+            color: #1976d2;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            margin: 5px;
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+        .social-links {
+            margin: 20px 0;
+        }
+        .social-links a {
+            display: inline-block;
+            margin: 0 10px;
+            text-decoration: none;
+            color: #1976d2;
+        }
+        .unsubscribe {
+            margin-top: 20px;
+            font-size: 12px;
+        }
+        .unsubscribe a {
+            color: #666;
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .header, .content {
+                padding: 20px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">💰 EXTrace</div>
+            <h1 class="newsletter-title">Weekly Financial Newsletter</h1>
+            <p class="newsletter-date">{{newsletterDate}}</p>
+        </div>
+
+        <div class="content">
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-icon">👋</span>
+                    Hello {{userName}}!
+                </h2>
+                <p>Welcome to your weekly dose of financial wisdom! We've curated the best tips, insights, and updates to help you make the most of your money.</p>
+            </div>
+
+            {{#if userStats}}
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-icon">📊</span>
+                    Your Progress This Week
+                </h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value">${{userStats.weeklySpent}}</div>
+                        <div class="stat-label">Spent This Week</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">{{userStats.transactionCount}}</div>
+                        <div class="stat-label">Transactions</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${{userStats.savedAmount}}</div>
+                        <div class="stat-label">Money Saved</div>
+                    </div>
+                </div>
+            </div>
+            {{/if}}
+
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-icon">💡</span>
+                    Financial Tips of the Week
+                </h2>
+
+                <div class="tip-item">
+                    <div class="tip-title">💳 Smart Credit Card Usage</div>
+                    <div class="tip-description">
+                        Pay off your credit card balance in full each month to avoid interest charges. Set up automatic payments to never miss a due date and maintain a good credit score.
+                    </div>
+                </div>
+
+                <div class="tip-item">
+                    <div class="tip-title">🏦 Emergency Fund Building</div>
+                    <div class="tip-description">
+                        Aim to save 3-6 months of living expenses in a high-yield savings account. Start small - even $25/week can build a substantial emergency fund over time.
+                    </div>
+                </div>
+
+                <div class="tip-item">
+                    <div class="tip-title">📱 Automate Your Savings</div>
+                    <div class="tip-description">
+                        Set up automatic transfers to your savings account right after payday. When it's automatic, you're more likely to stick with your savings goals.
+                    </div>
+                </div>
+
+                {{#if personalizedTip}}
+                <div class="tip-item" style="border-left-color: #4caf50;">
+                    <div class="tip-title">🎯 Personalized for You</div>
+                    <div class="tip-description">{{personalizedTip}}</div>
+                </div>
+                {{/if}}
+            </div>
+
+            {{#if newFeature}}
+            <div class="section">
+                <div class="feature-highlight">
+                    <div class="feature-title">🚀 New Feature Alert!</div>
+                    <div class="feature-description">{{newFeature.description}}</div>
+                    <a href="{{newFeature.url}}" class="feature-button">Try It Now</a>
+                </div>
+            </div>
+            {{/if}}
+
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-icon">📈</span>
+                    Market Insights
+                </h2>
+                <p><strong>Inflation Update:</strong> Consumer prices have {{#if inflationUp}}risen{{else}}stabilized{{/if}} this month. Consider adjusting your budget to account for changing costs in essentials like groceries and gas.</p>
+                <p><strong>Savings Rates:</strong> High-yield savings accounts are currently offering competitive rates. It might be a good time to review where you're keeping your emergency fund.</p>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-icon">🎓</span>
+                    Quick Learning
+                </h2>
+                <p><strong>Term of the Week: Dollar-Cost Averaging</strong></p>
+                <p>This is an investment strategy where you invest a fixed amount of money at regular intervals, regardless of market conditions. It helps reduce the impact of market volatility on your investments.</p>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <h3 class="cta-title">Ready to Level Up Your Finances?</h3>
+            <p class="cta-description">Explore advanced features and get personalized insights in your EXTrace dashboard.</p>
+            <a href="{{dashboardUrl}}" class="cta-button">Open Dashboard</a>
+            <a href="{{reportsUrl}}" class="cta-button">View Reports</a>
+        </div>
+
+        <div class="footer">
+            <p><strong>EXTrace Team</strong></p>
+            <p>Helping you build better financial habits, one transaction at a time.</p>
+            
+            <div class="social-links">
+                <a href="#">📧 Email</a>
+                <a href="#">🐦 Twitter</a>
+                <a href="#">💼 LinkedIn</a>
+            </div>
+
+            <div class="unsubscribe">
+                <p>Don't want to receive our newsletter? 
+                <a href="{{unsubscribeUrl}}">Unsubscribe here</a> or 
+                <a href="{{preferencesUrl}}">manage your email preferences</a>.</p>
+                <p>EXTrace © {{currentYear}}. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

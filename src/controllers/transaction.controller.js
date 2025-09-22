@@ -1,4 +1,5 @@
 const { Transaction, Category } = require('../models');
+const NotificationService = require('../services/notificationService');
 
 // Create transaction
 const createTransaction = async (req, res) => {
@@ -42,6 +43,17 @@ const createTransaction = async (req, res) => {
 
         await transaction.save();
         const newTransaction = await Transaction.findById(transaction._id).populate('categoryId', 'name icon color');
+
+        // Send transaction notification asynchronously
+        NotificationService.handleTransactionCreated(transaction._id).catch(error => {
+            console.error('Failed to send transaction notification:', error);
+        });
+
+        // Check budget alerts asynchronously
+        NotificationService.checkBudgetAlerts(userId, category.name).catch(error => {
+            console.error('Failed to check budget alerts:', error);
+        });
+
         res.status(201).json(newTransaction);
     } catch (error) {
         console.error('Error creating transaction:', error);

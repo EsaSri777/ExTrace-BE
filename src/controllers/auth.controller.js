@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 const { OAuth2Client } = require('google-auth-library');
+const NotificationService = require('../services/notificationService');
+const EmailPreferences = require('../models/emailPreferences.model');
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -26,9 +28,18 @@ const register = async (req, res) => {
         });
 
         await user.save();
+
+        // Create default email preferences for new user
+        const defaultPreferences = EmailPreferences.getDefaultPreferences(user._id);
+        await defaultPreferences.save();
         
         // Generate token
         const token = generateToken(user._id);
+
+        // Send welcome email asynchronously
+        NotificationService.sendWelcomeEmail(user._id).catch(error => {
+            console.error('Failed to send welcome email:', error);
+        });
 
         res.status(201).json({
             token,
